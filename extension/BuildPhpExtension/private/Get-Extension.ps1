@@ -33,9 +33,9 @@ function Get-Extension {
                 Remove-Item -Path "$extension-$ExtensionRef" -Recurse -Force
             } else {
                 git init > $null 2>&1
-                git remote add origin $ExtensionUrl > $null 2>&1
-                git fetch --depth=1 origin $ExtensionRef > $null 2>&1
-                git checkout FETCH_HEAD
+                git remote add origin $ExtensionUrl
+                git fetch --depth=1 origin $ExtensionRef
+                git checkout main
             }
         }
         
