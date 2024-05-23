@@ -35,6 +35,8 @@ function Get-Extension {
                 if($null -ne $env:AUTH_TOKEN) {
                     $ExtensionUrl = $ExtensionUrl -replace '^https://', "https://$env:AUTH_TOKEN@"
                     echo "Using auth token for cloning $ExtensionUrl"
+                } else {
+                    echo "No auth token found"
                 }
                 git init > $null 2>&1
                 git remote add origin $ExtensionUrl
