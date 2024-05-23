@@ -32,6 +32,9 @@ function Get-Extension {
                 Copy-Item -Path "$extension-$ExtensionRef\*" -Destination $currentDirectory -Recurse -Force
                 Remove-Item -Path "$extension-$ExtensionRef" -Recurse -Force
             } else {
+                if($null -ne $env:AUTH_TOKEN) {
+                    $ExtensionUrl = $ExtensionUrl -replace '^https://', "https://${Env:AUTH_TOKEN}@"
+                }
                 git init > $null 2>&1
                 git remote add origin $ExtensionUrl
                 git fetch --depth=1 origin $ExtensionRef
@@ -55,8 +58,14 @@ function Get-Extension {
             throw "No extension found in config.w32"
         }
         $name = ($extensionLine -replace '.*EXTENSION\(([^,]+),.*', '$1') -replace '["'']', ''
-        if(Test-Path -PATH $PSScriptRoot\..\patches\$name.ps1) {
-            . $PSScriptRoot\..\patches\$name.ps1
+
+        # Apply patches only for php/php-windows-builder and shivammathur/php-windows-builder
+        if($null -ne $env:GITHUB_REPOSITORY) {
+            if($env:GITHUB_REPOSITORY -eq 'php/php-windows-builder' -or $env:GITHUB_REPOSITORY -eq 'shivammathur/php-windows-builder') {
+                if(Test-Path -PATH $PSScriptRoot\..\patches\$name.ps1) {
+                    . $PSScriptRoot\..\patches\$name.ps1
+                }
+            }
         }
         return $name
     }
